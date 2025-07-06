@@ -15,9 +15,11 @@ class MainWindow(QMainWindow):
 
         self.setFixedSize(QSize(800, 500))
 
-app = QApplication(sys.argv)
+def main():
+    app = QApplication(sys.argv)
+    window = MainWindow()
+    window.show()
+    sys.exit(app.exec_())
 
-window = MainWindow()
-window.show()
-
-app.exec_()
+if __name__ == "__main__":
+    main()
