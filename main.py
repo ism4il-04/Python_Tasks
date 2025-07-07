@@ -10,10 +10,10 @@ import openpyxl
 class MainWindow(QMainWindow):
     def __init__(self, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
-
         self.setWindowTitle("To-do list")
-
         self.setFixedSize(QSize(800, 500))
+        self.setWindowIcon(QIcon("icon.ico"))
+        
 
 def main():
     app = QApplication(sys.argv)
