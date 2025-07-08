@@ -1,0 +1,2 @@
+STYLE_SHEET = """
+QPushButton {

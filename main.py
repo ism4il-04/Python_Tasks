@@ -1,8 +1,7 @@
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QMainWindow, QWidget,QFileDialog, QVBoxLayout, QHBoxLayout, QLineEdit, QDateEdit, QComboBox, QPushButton, QTableWidget, QApplication, QTableWidgetItem, QMessageBox
 from PyQt5.QtCore import QSize, QDate, Qt
-from layout_colorwidget import Color
-
+from styles import *
 import sys
 import pandas as pd
 import openpyxl
@@ -66,6 +65,8 @@ class MainWindow(QMainWindow):
         vbox.addLayout(hbox1)
 
         central_widget.setLayout(vbox)
+
+        self.setStyleSheet(STYLE_SHEET)
         
     def enregistrer(self):
         nom = self.nom_tache.text()
@@ -123,17 +124,44 @@ class MainWindow(QMainWindow):
             QMessageBox.information(self, "Succès", "saved successfully")
 
     def load(self):
-        """_summary_
-        """        
-        file_path, _ = QFileDialog.getSaveFileName(self, "Save to Excel", "", "Excel Files (*.xlsx)")
-        self.table.setRowCount(0)
-        if file_path:
-            try:
-                temp = pd.read_excel(file_path)
+        try:
+            # Load from Excel
+            file_path, _ = QFileDialog.getSaveFileName(self, "Save to Excel", "", "Excel Files (*.xlsx)")
+            self.df = pd.read_excel(file_path)
 
+            # Update table size
+            self.table.setRowCount(len(self.df))
+            self.table.setColumnCount(len(self.df.columns))
+            self.table.setHorizontalHeaderLabels(self.df.columns)
 
-            except:
-                pass
+            # Fill the table
+            for row in range(len(self.df)):
+                # Name & Responsable (text)
+                self.table.setItem(row, 0, QTableWidgetItem(str(self.df.iloc[row]["Name"])))
+                self.table.setItem(row, 1, QTableWidgetItem(str(self.df.iloc[row]["Responsable"])))
+
+                # Date (QDateEdit)
+                date_str = str(self.df.iloc[row]["Date"])
+                date_qt = QDate.fromString(date_str[:10], "yyyy-MM-dd")
+                date_edit = QDateEdit()
+                date_edit.setDate(date_qt if date_qt.isValid() else QDate.currentDate())
+                date_edit.setCalendarPopup(True)
+                self.table.setCellWidget(row, 2, date_edit)
+
+                # Difficulté (QComboBox)
+                combo_diff = QComboBox()
+                combo_diff.addItems(["Facile", "Moyen", "Difficile"])
+                combo_diff.setCurrentText(str(self.df.iloc[row]["difficulté"]))
+                self.table.setCellWidget(row, 3, combo_diff)
+
+                # État (QComboBox)
+                combo_etat = QComboBox()
+                combo_etat.addItems(["Non fait", "En cours", "Fait"])
+                combo_etat.setCurrentText(str(self.df.iloc[row]["état"]))
+                self.table.setCellWidget(row, 4, combo_etat)
+
+        except Exception as e:
+            print("Error loading Excel file:", e)
 
     def clear_all(self):
         # Clear QTableWidget
