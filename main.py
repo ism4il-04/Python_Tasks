@@ -1,5 +1,5 @@
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLineEdit, QDateEdit, QComboBox, QPushButton, QTableWidget, QApplication
+from PyQt5.QtWidgets import QMainWindow, QWidget,QFileDialog, QVBoxLayout, QHBoxLayout, QLineEdit, QDateEdit, QComboBox, QPushButton, QTableWidget, QApplication, QTableWidgetItem
 from PyQt5.QtCore import QSize,QDate
 from layout_colorwidget import Color
 
@@ -24,19 +24,17 @@ class MainWindow(QMainWindow):
         self.tache_etat = QComboBox()
         self.tache_etat.addItems(["pas commencé","en cours","términé"])
         self.button_enregistrer = QPushButton("Enregistrer")
+        self.button_enregistrer.clicked.connect(self.enregistrer)
         self.button_save = QPushButton("save")
+        self.button_save.clicked.connect(self.save)
         self.button_load = QPushButton("load")
+        self.button_load.clicked.connect(self.load)
 
         self.table = QTableWidget()
         self.table.setColumnCount(5)
         self.table.setHorizontalHeaderLabels(["Name", "Responsable", "Date","difficulté","état"])
 
-        self.data={
-            "tache": ["job"],
-            "respo": ["ismail"],
-            "date": ["31/07/2004"]
-        }
-        self.df=pd.DataFrame()
+        self.df=pd.DataFrame(columns=["Name", "Responsable", "Date","difficulté","état"])
 
         self.initUI()
         
@@ -64,6 +62,53 @@ class MainWindow(QMainWindow):
         vbox.addLayout(hbox1)
 
         central_widget.setLayout(vbox)
+        
+    def enregistrer(self):
+        nom = self.nom_tache.text()
+        resp = self.nom_resp.text()
+        date = self.date_tache.text()
+        diff = self.tache_diff.currentText()
+        etat = self.tache_etat.currentText()
+
+        d = {
+            "Name": nom,
+            "Responsable": resp,
+            "Date": date,
+            "difficulté": diff,
+            "état": etat
+        }
+
+        temp = pd.DataFrame([d])
+        self.df=pd.concat([self.df,temp],ignore_index=True)
+        print("Vous avez ajouté la tache ci dessous")
+        print("<====================================================================>")
+        print(temp)
+        print("<====================================================================>")
+        self.clear()
+        row = self.table.rowCount()
+        self.table.insertRow(row)
+        self.table.setItem(row,0,QTableWidgetItem(nom))
+        self.table.setItem(row,1,QTableWidgetItem(resp))
+        self.table.setItem(row,2,QTableWidgetItem(date))
+        self.table.setItem(row,3,QTableWidgetItem(diff))
+        self.table.setItem(row,4,QTableWidgetItem(etat))
+
+
+
+    def clear(self):
+        self.nom_tache.clear()
+        self.nom_resp.clear()
+        self.tache_diff.setCurrentText("easy")
+        self.tache_etat.setCurrentText("pas commencé")
+        self.date_tache.setDate(QDate.currentDate())
+
+    def save(self):
+        file_path, _ = QFileDialog.getSaveFileName(self, "Save to Excel", "", "Excel Files (*.xlsx)")
+        self.df.to_excel(file_path,index=False)
+
+    def load(self):
+        pass
+
 
         
 
