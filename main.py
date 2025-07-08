@@ -1,6 +1,6 @@
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QMainWindow, QWidget,QFileDialog, QVBoxLayout, QHBoxLayout, QLineEdit, QDateEdit, QComboBox, QPushButton, QTableWidget, QApplication, QTableWidgetItem
-from PyQt5.QtCore import QSize,QDate
+from PyQt5.QtWidgets import QMainWindow, QWidget,QFileDialog, QVBoxLayout, QHBoxLayout, QLineEdit, QDateEdit, QComboBox, QPushButton, QTableWidget, QApplication, QTableWidgetItem, QMessageBox
+from PyQt5.QtCore import QSize, QDate, Qt
 from layout_colorwidget import Color
 
 import sys
@@ -87,11 +87,21 @@ class MainWindow(QMainWindow):
         self.clear()
         row = self.table.rowCount()
         self.table.insertRow(row)
-        self.table.setItem(row,0,QTableWidgetItem(nom))
-        self.table.setItem(row,1,QTableWidgetItem(resp))
-        self.table.setItem(row,2,QTableWidgetItem(date))
-        self.table.setItem(row,3,QTableWidgetItem(diff))
-        self.table.setItem(row,4,QTableWidgetItem(etat))
+        na = QTableWidgetItem(nom)
+        re = QTableWidgetItem(resp)
+        da = QTableWidgetItem(date)
+        df = QTableWidgetItem(diff)
+        et = QTableWidgetItem(etat)
+        na.setFlags(na.flags() | Qt.ItemIsEditable)
+        re.setFlags(re.flags() | Qt.ItemIsEditable)
+        da.setFlags(da.flags() | Qt.ItemIsEditable)
+        df.setFlags(df.flags() | Qt.ItemIsEditable)
+        et.setFlags(et.flags() | Qt.ItemIsEditable)
+        self.table.setItem(row,0,na)
+        self.table.setItem(row,1,re)
+        self.table.setItem(row,2,da)
+        self.table.setItem(row,3,df)
+        self.table.setItem(row,4,et)
 
 
 
@@ -104,11 +114,29 @@ class MainWindow(QMainWindow):
 
     def save(self):
         file_path, _ = QFileDialog.getSaveFileName(self, "Save to Excel", "", "Excel Files (*.xlsx)")
-        self.df.to_excel(file_path,index=False)
+        if file_path:
+            self.df.to_excel(file_path,index=False)
+            QMessageBox.information(self, "Succès", "saved successfully")
 
     def load(self):
-        pass
+        """_summary_
+        """        
+        file_path, _ = QFileDialog.getSaveFileName(self, "Save to Excel", "", "Excel Files (*.xlsx)")
+        self.table.setRowCount(0)
+        if file_path:
+            try:
+                temp = pd.read_excel(file_path)
 
+
+            except:
+                pass
+
+    def clear_all(self):
+        # Clear QTableWidget
+        self.table.setRowCount(0)
+
+        # Clear DataFrame
+        self.df = pd.DataFrame(columns=["Name", "Responsable", "Date","difficulté","état"])
 
         
 
