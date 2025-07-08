@@ -19,6 +19,7 @@ class MainWindow(QMainWindow):
         self.nom_resp.setPlaceholderText("nom de responsable de la tache")
         self.date_tache = QDateEdit()
         self.date_tache.setDate(QDate.currentDate())
+        self.date_tache.setCalendarPopup(True)
         self.tache_diff = QComboBox()
         self.tache_diff.addItems(["easy","normal","hard"])
         self.tache_etat = QComboBox()
@@ -29,6 +30,8 @@ class MainWindow(QMainWindow):
         self.button_save.clicked.connect(self.save)
         self.button_load = QPushButton("load")
         self.button_load.clicked.connect(self.load)
+        self.button_clear = QPushButton("clear tasks")
+        self.button_clear.clicked.connect(self.clear_all)
 
         self.table = QTableWidget()
         self.table.setColumnCount(5)
@@ -58,6 +61,7 @@ class MainWindow(QMainWindow):
         hbox1 = QHBoxLayout()
         hbox1.addWidget(self.button_save)
         hbox1.addWidget(self.button_load)
+        hbox1.addWidget(self.button_clear)
 
         vbox.addLayout(hbox1)
 
