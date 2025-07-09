@@ -38,6 +38,8 @@ class MainWindow(QMainWindow):
 
         self.df=pd.DataFrame(columns=["Name", "Responsable", "Date","difficulté","état"])
 
+        self.temp = self.date_tache
+
         self.initUI()
         
     def initUI(self):
@@ -68,12 +70,18 @@ class MainWindow(QMainWindow):
 
         self.setStyleSheet(STYLE_SHEET)
         
-    def enregistrer(self):
+    def enregistrer(self,dd):
         nom = self.nom_tache.text()
         resp = self.nom_resp.text()
-        date = self.date_tache.text()
-        diff = self.tache_diff.currentText()
+        date = dd
+        date.setCalendarPopup(True)
+        diff = QComboBox()
+        diff.addItems(["easy","normal","hard"])
+        diff.setCurrentText(self.tache_diff.currentText())
         etat = self.tache_etat.currentText()
+        etat = QComboBox()
+        etat.addItems(["pas commencé","en cours","términé"])
+        etat.setCurrentText(self.tache_etat.currentText())
 
         d = {
             "Name": nom,
@@ -94,19 +102,13 @@ class MainWindow(QMainWindow):
         self.table.insertRow(row)
         na = QTableWidgetItem(nom)
         re = QTableWidgetItem(resp)
-        da = QTableWidgetItem(date)
-        df = QTableWidgetItem(diff)
-        et = QTableWidgetItem(etat)
         na.setFlags(na.flags() | Qt.ItemIsEditable)
         re.setFlags(re.flags() | Qt.ItemIsEditable)
-        da.setFlags(da.flags() | Qt.ItemIsEditable)
-        df.setFlags(df.flags() | Qt.ItemIsEditable)
-        et.setFlags(et.flags() | Qt.ItemIsEditable)
         self.table.setItem(row,0,na)
         self.table.setItem(row,1,re)
-        self.table.setItem(row,2,da)
-        self.table.setItem(row,3,df)
-        self.table.setItem(row,4,et)
+        self.table.setCellWidget(row,2,date)
+        self.table.setCellWidget(row,3,diff)
+        self.table.setCellWidget(row,4,etat)
 
 
 
